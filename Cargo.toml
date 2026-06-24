@@ -1,0 +1,35 @@
+[package]
+name = "rocknix-keyboard"
+version = "0.1.0"
+edition = "2024"
+authors = ["ROCKNIX contributors"]
+description = "A GPUI-based on-screen keyboard for ROCKNIX"
+license = "GPL-3.0-or-later"
+rust-version = "1.85.0"
+
+[dependencies]
+anyhow = "1"
+gpui = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9" }
+gpui_platform = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9", features = ["font-kit", "runtime_shaders", "wayland", "x11"] }
+gpui-component = { git = "https://github.com/weihuoya/gpui-component", rev = "ed9fa667de5604640f69c2a95b13e7ac93c2d4e1" }
+gpui-component-assets = { git = "https://github.com/weihuoya/gpui-component", rev = "ed9fa667de5604640f69c2a95b13e7ac93c2d4e1" }
+libc = "0.2"
+parking_lot = "0.12.1"
+rustix = { version = "0.38", features = ["event", "fs"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "local-time", "time", "tracing-log"] }
+wayland-client = "0.31"
+wayland-protocols-misc = { version = "0.3", features = ["client"] }
+xkbcommon = { version = "0.8", features = ["wayland"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[patch."https://github.com/zed-industries/zed"]
+gpui = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9" }
+gpui_platform = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9" }
+gpui_web = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9" }
+gpui_macros = { git = "https://github.com/weihuoya/zed", rev = "31a621bdf40151e5e80b9923d630d040dd6a28b9" }
