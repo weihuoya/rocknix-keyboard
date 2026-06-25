@@ -287,6 +287,11 @@ where
     let key_size = px(54.);
     let key_gap = px(5.);
 
+    // Make the keyboard panel semi-transparent so the underlying application
+    // remains partially visible.
+    const PANEL_ALPHA: f32 = 0.7;
+    const KEY_ALPHA: f32 = 0.9;
+
     let state_for_rows = state.clone();
     let key_rows = layout.into_iter().enumerate().map(move |(row_idx, row)| {
         let mut row_flex = h_flex().gap(key_gap).items_center().justify_center();
@@ -321,9 +326,9 @@ where
                     .items_center()
                     .justify_center()
                     .rounded_md()
-                    .bg(theme.colors.button_secondary)
-                    .hover(|style| style.bg(theme.colors.button_secondary_hover))
-                    .active(|style| style.bg(theme.colors.button_secondary_active))
+                    .bg(theme.colors.button_secondary.alpha(KEY_ALPHA))
+                    .hover(|style| style.bg(theme.colors.button_secondary_hover.alpha(KEY_ALPHA)))
+                    .active(|style| style.bg(theme.colors.button_secondary_active.alpha(KEY_ALPHA)))
                     .text_color(theme.colors.button_secondary_foreground)
                     .child(label)
                     .on_touch_event(move |event: &TouchEvent, window, cx| match event.phase {
@@ -371,11 +376,11 @@ where
         .px_2()
         .py_1()
         .h(px(36.))
-        .bg(theme.tab_bar)
+        .bg(theme.tab_bar.alpha(PANEL_ALPHA))
         .border_t_1()
         .border_l_1()
         .border_r_1()
-        .border_color(theme.border)
+        .border_color(theme.border.alpha(PANEL_ALPHA))
         .rounded_t_md()
         .child(
             div()
@@ -392,11 +397,11 @@ where
         .flex_col()
         .gap(key_gap)
         .p_2()
-        .bg(theme.popover)
+        .bg(theme.popover.alpha(PANEL_ALPHA))
         .border_b_1()
         .border_l_1()
         .border_r_1()
-        .border_color(theme.border)
+        .border_color(theme.border.alpha(PANEL_ALPHA))
         .rounded_b_md()
         .children(key_rows);
 

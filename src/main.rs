@@ -187,19 +187,28 @@ fn handle_action(
     }
 }
 
-/// Send a printable character.  If the character maps to a physical key we use
-/// that keycode; otherwise we fall back to a direct keysym (not implemented in
-/// the first iteration).
+/// Send a printable character.
+///
+/// The keyboard's "case toggle" only changes letter case. For non-letters the
+/// key cap shows exactly the character that will be sent, so we ignore the
+/// global shifted state and only send Shift when the target character itself
+/// requires it (e.g. '!' needs KEY_1 with Shift).
 fn send_key_press(ch: char, shifted: bool, backend: &Arc<Mutex<dyn KeyboardBackend>>) {
-    // Uppercase letters and many US-layout symbols require shift held while the
-    // key is pressed. If the keyboard is already shifted we leave the modifier
-    // state alone; otherwise we press shift for this key and restore afterwards.
-    let needs_shift = ch.is_ascii_uppercase() || keycodes::char_needs_shift(ch);
-    let effective_shift = shifted || needs_shift;
+    let ch = if ch.is_ascii_alphabetic() {
+        if shifted {
+            ch.to_ascii_uppercase()
+        } else {
+            ch.to_ascii_lowercase()
+        }
+    } else {
+        ch
+    };
 
-    if effective_shift != shifted {
+    let needs_shift = ch.is_ascii_uppercase() || keycodes::char_needs_shift(ch);
+
+    if needs_shift != shifted {
         backend.lock().set_modifiers(ModifierState {
-            shift: effective_shift,
+            shift: needs_shift,
             ..Default::default()
         });
     }
@@ -210,7 +219,7 @@ fn send_key_press(ch: char, shifted: bool, backend: &Arc<Mutex<dyn KeyboardBacke
         backend.lock().send_character(ch);
     }
 
-    if effective_shift != shifted {
+    if needs_shift != shifted {
         backend.lock().set_modifiers(ModifierState {
             shift: shifted,
             ..Default::default()
